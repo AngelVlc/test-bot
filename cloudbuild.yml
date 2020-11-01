@@ -1,0 +1,23 @@
+steps:
+- name: 'hashicorp/terraform:0.13.5'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - |
+      cd terraform
+      terraform init || exit 1
+- name: 'hashicorp/terraform:0.13.5'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - | 
+      cd terraform
+      terraform plan || exit 1
+- name: 'hashicorp/terraform:0.13.5'
+  entrypoint: 'sh'
+  args:
+  - '-c'
+  - | 
+      cd terraform
+      TF_LOG=DEBUG terraform apply -auto-approve || exit 1
+      terraform output url
