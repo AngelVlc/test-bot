@@ -1,4 +1,10 @@
 steps:
+- name: gcr.io/cloud-builders/gcloud
+  volumes:
+    - name: 'vol1'
+      path: '/persistent_volume'
+  entrypoint: 'bash'
+  args: [ '-c', "gcloud secrets versions access latest --secret=movies_telegram_bot_token --format='get(payload.data)' | tr '_-' '/+' | base64 -d > /persistent_volume/bot_token.txt" ]
 - name: 'hashicorp/terraform:0.13.5'
   entrypoint: 'sh'
   args:
@@ -14,10 +20,24 @@ steps:
       cd terraform
       terraform plan || exit 1
 - name: 'hashicorp/terraform:0.13.5'
+  volumes:
+    - name: 'vol1'
+      path: '/persistent_volume'
   entrypoint: 'sh'
   args:
   - '-c'
   - | 
       cd terraform
       terraform apply -auto-approve || exit 1
-      terraform output url
+      terraform output url > /persistent_volume/url.txt
+- name: 'gcr.io/cloud-builders/curl'
+  volumes:
+    - name: 'vol1'
+      path: '/persistent_volume'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - | 
+      _VARIABLE_NAME=($(cat /persistent_volume/bot_token.txt) && echo -n \)_VARIABLE_NAME
+      echo "### ${_VARIABLE_NAME} ###"
+      curl -v -F "url=$(cat /persistent_volume/url.txt)" https://api.telegram.org/bot$(cat /persistent_volume/bot_token.txt)/setWebhook"
