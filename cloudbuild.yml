@@ -19,5 +19,5 @@ steps:
   - '-c'
   - | 
       cd terraform
-      TF_LOG=DEBUG terraform apply -auto-approve || exit 1
+      terraform apply -auto-approve || exit 1
       terraform output url
