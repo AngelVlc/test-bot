@@ -15,10 +15,22 @@ resource "google_cloud_run_service" "movies-telegram-bot" {
   template {
     spec {
       containers {
-        image = "gcr.io/cloudrun/hello"
+        image = var.container_image
         env {
-            name = "MIENV"
-            value = "angelote"
+          name = "BOT_TOKEN"
+          value = var.bot_token
+        }
+        env {
+          name = "API_BASE_URL"
+          value = var.api_base_url
+        }
+        env {
+          name = "API_USERNAME"
+          value = var.api_username
+        }
+        env {
+          name = "API_PASSWORD"
+          value = var.api_password
         }
       }
     }
