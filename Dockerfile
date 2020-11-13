@@ -1,18 +1,11 @@
-FROM node:8.16.0-alpine AS base
+FROM node:14.15.0-alpine3.12 AS base
 ENV APP=/app
 WORKDIR $APP
 COPY package.json package-lock.json $APP/
 RUN npm install
 COPY . $APP
 
-# FROM node:8.16.0-alpine AS test
-# ENV APP=/app
-# WORKDIR $APP
-# COPY package.json package-lock.json jasmine.json $APP/
-# RUN npm install
-# COPY --from=base /app/lib ./lib/
-
-FROM node:8.16.0-alpine AS release
+FROM node:14.15.0-alpine3.12 AS release
 ENV NODE_ENV=production
 ENV APP=/app
 WORKDIR $APP
